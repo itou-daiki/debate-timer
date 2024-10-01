@@ -107,6 +107,8 @@
         </div>
     </div>
 
+    <audio id="timer-end-sound" src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAADAAAGhgBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr///////////////////////////////////////////8AAAA5TEFNRTMuOTlyAm4AAAAALgkAABSAJAJATQAARgABhoZXxAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxAADwAABpAAAACAAADSAAAAETEFNRTMuOTkuNVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xDECgPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" preload="auto"></audio>
+
     <script>
         const stages = [
             { 
@@ -135,7 +137,7 @@
             },
             { 
                 section: "質疑",
-                name: "肯定側質疑", 
+                name: "肯定側質疥", 
                 time: 120,
                 explanation: "相手の立論について、不明な点や疑問点を質問します。\n＊質問のみ。反論はしない"
             },
@@ -196,6 +198,7 @@
         const resetButton = document.getElementById('reset');
         const nextStageButton = document.getElementById('next-stage');
         const prevStageButton = document.getElementById('prev-stage');
+        const timerEndSound = document.getElementById('timer-end-sound');
 
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
@@ -217,6 +220,7 @@
                         timeLeft--;
                         updateTimerDisplay();
                     } else {
+                        timerEndSound.play();
                         nextStage();
                     }
                 }, 1000);
@@ -242,6 +246,7 @@
             updateStageDisplay();
             updateTimerDisplay();
             resetTimer();
+            startTimer();  // 自動的にタイマーを開始
         }
 
         function prevStage() {
