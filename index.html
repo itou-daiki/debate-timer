@@ -24,62 +24,68 @@
             color: var(--text-color);
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 2vh;
+            height: 100vh;
+            padding: 2vh;
             box-sizing: border-box;
         }
         .header {
+            grid-column: 1 / -1;
             text-align: center;
         }
         h1 {
-            font-size: 6vw;
-            margin: 0 0 10px 0;
+            font-size: 5vh;
+            margin: 0;
             color: var(--accent-color);
         }
         #section {
-            font-size: 8vw;
+            font-size: 6vh;
             color: var(--accent-color);
-            margin: 10px 0;
             font-weight: bold;
         }
         #current-stage {
-            font-size: 6vw;
-            margin-bottom: 20px;
+            font-size: 4vh;
         }
         .timer-container {
-            text-align: center;
-            flex-grow: 1;
+            grid-column: 1;
+            grid-row: 2;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         #timer {
-            font-size: 24vw;
+            font-size: 20vh;
             font-weight: bold;
             color: var(--timer-color);
         }
         #explanation {
-            font-size: 4vw;
-            margin: 20px 0;
+            grid-column: 2;
+            grid-row: 2;
+            font-size: 3vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            padding: 0 2vh;
         }
         .controls {
+            grid-column: 1 / -1;
+            grid-row: 3;
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 2vh;
         }
         button {
-            font-size: 3vw;
-            padding: 15px 30px;
+            font-size: 2.5vh;
+            padding: 1.5vh 3vh;
             cursor: pointer;
             background-color: var(--button-color);
             color: var(--button-text-color);
             border: none;
-            border-radius: 10px;
+            border-radius: 1vh;
             transition: all 0.3s ease;
         }
         button:hover {
