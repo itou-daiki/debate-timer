@@ -5,62 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ディベートタイマー</title>
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
         .container {
-            text-align: center;
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 90%;
         }
-        #timer {
-            font-size: 48px;
-            margin: 20px 0;
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        #section, #current-stage {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        #section {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
         }
         #current-stage {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        #timer {
+            font-size: 4rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        #explanation {
+            text-align: left;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
         button {
-            font-size: 18px;
-            padding: 10px 20px;
-            margin: 5px;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
             cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        #start-stop {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        #reset, #prev-stage, #next-stage {
+            background-color: var(--primary-color);
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>ディベートタイマー</h1>
-        <div id="current-stage">準備中</div>
+        <div id="section"></div>
+        <div id="current-stage"></div>
         <div id="timer">00:00</div>
-        <button id="start-stop">開始</button>
-        <button id="reset">リセット</button>
-        <button id="next-stage">次のステージ</button>
+        <div id="explanation"></div>
+        <div class="controls">
+            <button id="prev-stage">前のステージ</button>
+            <button id="start-stop">開始</button>
+            <button id="reset">リセット</button>
+            <button id="next-stage">次のステージ</button>
+        </div>
     </div>
 
     <script>
         const stages = [
-            { name: "肯定側立論", time: 120 },
-            { name: "否定側立論", time: 120 },
-            { name: "作戦タイム（質疑準備）", time: 60 },
-            { name: "否定側質疑", time: 120 },
-            { name: "肯定側質疑", time: 120 },
-            { name: "作戦タイム（第一反駁準備）", time: 120 },
-            { name: "否定側第一反駁", time: 120 },
-            { name: "肯定側第一反駁", time: 120 },
-            { name: "作戦タイム（第二反駁準備）", time: 120 },
-            { name: "否定側第二反駁", time: 120 },
-            { name: "肯定側第二反駁", time: 120 },
-            { name: "判定", time: 60 }
+            { 
+                section: "立論",
+                name: "肯定側立論", 
+                time: 120,
+                explanation: "肯定側が、論題についてのメリットを根拠となる情報とともに示します。\n＊今後の議論は立論で出たもののみとする。（立論で出ていない議論を新たに出してはいけない）"
+            },
+            { 
+                section: "立論",
+                name: "否定側立論", 
+                time: 120,
+                explanation: "否定側が、論題についてのデメリットを根拠となる情報とともに示します。\n＊今後の議論は立論で出たもののみとする。（立論で出ていない議論を新たに出してはいけない）"
+            },
+            { 
+                section: "質疑",
+                name: "作戦タイム（質疑準備）", 
+                time: 60,
+                explanation: "相手チームにどのような質問をぶつけるかをまとめます。"
+            },
+            { 
+                section: "質疑",
+                name: "否定側質疑", 
+                time: 120,
+                explanation: "相手の立論について、不明な点や疑問点を質問します。\n＊質問のみ。反論はしない"
+            },
+            { 
+                section: "質疑",
+                name: "肯定側質疑", 
+                time: 120,
+                explanation: "相手の立論について、不明な点や疑問点を質問します。\n＊質問のみ。反論はしない"
+            },
+            { 
+                section: "反駁",
+                name: "作戦タイム（第一反駁準備）", 
+                time: 120,
+                explanation: "第一反駁で相手の立論のどの部分へ反論するかを決めます。"
+            },
+            { 
+                section: "反駁",
+                name: "否定側第一反駁", 
+                time: 120,
+                explanation: "質疑の内容を生かしつつ、相手のメリットに反論します。"
+            },
+            { 
+                section: "反駁",
+                name: "肯定側第一反駁", 
+                time: 120,
+                explanation: "質疑の内容を生かしつつ、相手のデメリットに反論します。"
+            },
+            { 
+                section: "反駁",
+                name: "作戦タイム（第二反駁準備）", 
+                time: 120,
+                explanation: "第二反駁で、どのようなアピールをするかを話し合います。\n＊第一反駁で言っていないことは、第二反駁で言ってはいけません。"
+            },
+            { 
+                section: "反駁",
+                name: "否定側第二反駁", 
+                time: 120,
+                explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、審判へ自分たちの勝ちをアピールします。"
+            },
+            { 
+                section: "反駁",
+                name: "肯定側第二反駁", 
+                time: 120,
+                explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、審判へ自分たちの勝ちをアピールします。"
+            },
+            { 
+                section: "判定",
+                name: "判定", 
+                time: 60,
+                explanation: "審判の投票（挙手）によって、勝利チームを判定します。挙手の数を数える"
+            }
         ];
 
         let currentStageIndex = 0;
@@ -68,11 +188,14 @@
         let timerInterval;
         let isRunning = false;
 
+        const sectionDisplay = document.getElementById('section');
         const timerDisplay = document.getElementById('timer');
         const currentStageDisplay = document.getElementById('current-stage');
+        const explanationDisplay = document.getElementById('explanation');
         const startStopButton = document.getElementById('start-stop');
         const resetButton = document.getElementById('reset');
         const nextStageButton = document.getElementById('next-stage');
+        const prevStageButton = document.getElementById('prev-stage');
 
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
@@ -81,7 +204,9 @@
         }
 
         function updateStageDisplay() {
+            sectionDisplay.textContent = stages[currentStageIndex].section;
             currentStageDisplay.textContent = stages[currentStageIndex].name;
+            explanationDisplay.textContent = stages[currentStageIndex].explanation;
         }
 
         function startTimer() {
@@ -92,16 +217,14 @@
                         timeLeft--;
                         updateTimerDisplay();
                     } else {
-                        clearInterval(timerInterval);
-                        isRunning = false;
-                        startStopButton.textContent = '開始';
+                        nextStage();
                     }
                 }, 1000);
-                startStopButton.textContent = '停止';
+                startStopButton.textContent = '一時停止';
             } else {
                 clearInterval(timerInterval);
                 isRunning = false;
-                startStopButton.textContent = '開始';
+                startStopButton.textContent = '再開';
             }
         }
 
@@ -121,9 +244,18 @@
             resetTimer();
         }
 
+        function prevStage() {
+            currentStageIndex = (currentStageIndex - 1 + stages.length) % stages.length;
+            timeLeft = stages[currentStageIndex].time;
+            updateStageDisplay();
+            updateTimerDisplay();
+            resetTimer();
+        }
+
         startStopButton.addEventListener('click', startTimer);
         resetButton.addEventListener('click', resetTimer);
         nextStageButton.addEventListener('click', nextStage);
+        prevStageButton.addEventListener('click', prevStage);
 
         updateStageDisplay();
         updateTimerDisplay();
