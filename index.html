@@ -27,7 +27,7 @@
         .container {
             display: grid;
             grid-template-columns: 1fr;
-            grid-template-rows: auto auto 1fr auto;
+            grid-template-rows: auto auto auto auto;
             gap: 2vh;
             width: 90%;
             height: 90vh;
@@ -129,73 +129,73 @@
     <script>
         const stages = [
             { 
-                section: "立論",
+                section: "「立論」",
                 name: "肯定側立論", 
                 time: 120,
                 explanation: "肯定側が、論題についてのメリットを根拠となる情報とともに示します（＊今後の議論は立論で出たもののみとする）"
             },
             { 
-                section: "立論",
+                section: "「立論」",
                 name: "否定側立論", 
                 time: 120,
                 explanation: "否定側が、論題についてのデメリットを根拠となる情報とともに示します（＊今後の議論は立論で出たもののみとする）"
             },
             { 
-                section: "質疑",
+                section: "「質疑」",
                 name: "作戦タイム", 
                 time: 60,
                 explanation: "相手チームにどのような質問をぶつけるかをまとめます"
             },
             { 
-                section: "質疑",
+                section: "「質疑」",
                 name: "否定側質疑", 
                 time: 120,
                 explanation: "相手の立論について、不明な点や疑問点を質問します"
             },
             { 
-                section: "質疥",
+                section: "「質疑」",
                 name: "肯定側質疑", 
                 time: 120,
                 explanation: "相手の立論について、不明な点や疑問点を質問します"
             },
             { 
-                section: "反駁",
+                section: "「第一反駁」",
                 name: "作戦タイム", 
                 time: 120,
                 explanation: "第一反駁で相手の立論のどの部分へ反論するかを決めます"
             },
             { 
-                section: "反駁",
+                section: "「第一反駁」",
                 name: "否定側第一反駁", 
                 time: 120,
-                explanation: "質疑の内容を生かしつつ、相手のメリットに反論します"
+                explanation: "質疥の内容を生かしつつ、相手のメリットに反論します"
             },
             { 
-                section: "反駁",
+                section: "「第一反駁」",
                 name: "肯定側第一反駁", 
                 time: 120,
-                explanation: "質疑の内容を生かしつつ、相手のデメリットに反論します"
+                explanation: "質疥の内容を生かしつつ、相手のデメリットに反論します"
             },
             { 
-                section: "反駁",
+                section: "「第二反駁」",
                 name: "作戦タイム", 
                 time: 120,
                 explanation: "第二反駁で、どのようなアピールをするかを話し合います"
             },
             { 
-                section: "反駁",
+                section: "「第二反駁」",
                 name: "否定側第二反駁", 
                 time: 120,
                 explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、 審判へ自分たちの勝ちをアピールします　＊第一反駁で言っていないことは、第二反駁で言ってはいけません。"
             },
             { 
-                section: "反駁",
+                section: "「第二反駁」",
                 name: "肯定側第二反駁", 
                 time: 120,
                 explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、 審判へ自分たちの勝ちをアピールします　＊第一反駁で言っていないことは、第二反駁で言ってはいけません。"
             },
             { 
-                section: "判定",
+                section: "「判定」",
                 name: "判定", 
                 time: 60,
                 explanation: "審判が勝敗を判定する"
@@ -240,8 +240,12 @@
                         timeLeft--;
                         updateTimerDisplay();
                     } else {
-                        timerEndSound.play();
-                        nextStage();
+                        clearInterval(timerInterval);
+                        playLoopedSound(timerEndSound);
+                        setTimeout(() => {
+                            nextStage();
+                            startTimer();
+                        }, 6000); // 音が2回鳴り終わるのを待ってから次のステージに進む
                     }
                 }, 1000);
                 startButton.disabled = true;
@@ -273,7 +277,6 @@
             updateStageDisplay();
             updateTimerDisplay();
             resetTimer();
-            startTimer();
         }
 
         function prevStage() {
@@ -284,8 +287,20 @@
             resetTimer();
         }
 
+        function playLoopedSound(sound) {
+            let playCount = 0;
+            sound.play();
+            sound.addEventListener('ended', function() {
+                playCount++;
+                if (playCount < 2) {
+                    this.currentTime = 0;
+                    this.play();
+                }
+            }, { once: false });
+        }
+
         function playSound() {
-            attentionSound.play();
+            playLoopedSound(attentionSound);
         }
 
         startButton.addEventListener('click', startTimer);
