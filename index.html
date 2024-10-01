@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ディベートタイマー</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #timer {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        #current-stage {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ディベートタイマー</h1>
+        <div id="current-stage">準備中</div>
+        <div id="timer">00:00</div>
+        <button id="start-stop">開始</button>
+        <button id="reset">リセット</button>
+        <button id="next-stage">次のステージ</button>
+    </div>
+
+    <script>
+        const stages = [
+            { name: "肯定側立論", time: 120 },
+            { name: "否定側立論", time: 120 },
+            { name: "作戦タイム（質疑準備）", time: 60 },
+            { name: "否定側質疑", time: 120 },
+            { name: "肯定側質疑", time: 120 },
+            { name: "作戦タイム（第一反駁準備）", time: 120 },
+            { name: "否定側第一反駁", time: 120 },
+            { name: "肯定側第一反駁", time: 120 },
+            { name: "作戦タイム（第二反駁準備）", time: 120 },
+            { name: "否定側第二反駁", time: 120 },
+            { name: "肯定側第二反駁", time: 120 },
+            { name: "判定", time: 60 }
+        ];
+
+        let currentStageIndex = 0;
+        let timeLeft = stages[currentStageIndex].time;
+        let timerInterval;
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const currentStageDisplay = document.getElementById('current-stage');
+        const startStopButton = document.getElementById('start-stop');
+        const resetButton = document.getElementById('reset');
+        const nextStageButton = document.getElementById('next-stage');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateStageDisplay() {
+            currentStageDisplay.textContent = stages[currentStageIndex].name;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        startStopButton.textContent = '開始';
+                    }
+                }, 1000);
+                startStopButton.textContent = '停止';
+            } else {
+                clearInterval(timerInterval);
+                isRunning = false;
+                startStopButton.textContent = '開始';
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeLeft = stages[currentStageIndex].time;
+            updateTimerDisplay();
+            startStopButton.textContent = '開始';
+        }
+
+        function nextStage() {
+            currentStageIndex = (currentStageIndex + 1) % stages.length;
+            timeLeft = stages[currentStageIndex].time;
+            updateStageDisplay();
+            updateTimerDisplay();
+            resetTimer();
+        }
+
+        startStopButton.addEventListener('click', startTimer);
+        resetButton.addEventListener('click', resetTimer);
+        nextStageButton.addEventListener('click', nextStage);
+
+        updateStageDisplay();
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
