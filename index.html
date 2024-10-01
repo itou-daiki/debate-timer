@@ -6,112 +6,116 @@
     <title>ディベートタイマー</title>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --background-color: #ecf0f1;
-            --text-color: #34495e;
-            --warning-color: #e74c3c;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #3498db;
+            --timer-color: #2c3e50;
+            --button-color: #ecf0f1;
+            --button-text-color: #2c3e50;
+            --button-hover-color: #3498db;
+            --button-hover-text-color: #ffffff;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        body, html {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
         }
         .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center;
         }
         h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 3rem;
-        }
-        #section, #current-stage {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 6vw;
+            margin: 0 0 10px 0;
+            color: var(--accent-color);
         }
         #section {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
+            font-size: 8vw;
+            color: var(--accent-color);
+            margin: 10px 0;
+            font-weight: bold;
         }
         #current-stage {
-            font-size: 2rem;
+            font-size: 6vw;
+            margin-bottom: 20px;
+        }
+        .timer-container {
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #timer {
-            font-size: 8rem;
-            text-align: center;
-            margin: 1rem 0;
+            font-size: 24vw;
             font-weight: bold;
-            color: var(--primary-color);
+            color: var(--timer-color);
         }
         #explanation {
-            text-align: left;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            font-size: 1.5rem;
-            line-height: 1.5;
+            font-size: 4vw;
+            margin: 20px 0;
+            text-align: center;
         }
         .controls {
             display: flex;
             justify-content: center;
-            gap: 1rem;
             flex-wrap: wrap;
+            gap: 15px;
         }
         button {
-            font-size: 1.5rem;
-            padding: 0.75rem 1.5rem;
+            font-size: 3vw;
+            padding: 15px 30px;
             cursor: pointer;
+            background-color: var(--button-color);
+            color: var(--button-text-color);
             border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s, transform 0.1s;
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
         button:hover {
-            opacity: 0.9;
+            background-color: var(--button-hover-color);
+            color: var(--button-hover-text-color);
         }
         button:active {
             transform: scale(0.98);
         }
-        #start, #pause {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        #reset, #prev-stage, #next-stage {
-            background-color: var(--primary-color);
-            color: white;
-        }
         #play-sound {
-            background-color: var(--warning-color);
+            background-color: #e74c3c;
             color: white;
+        }
+        #play-sound:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ディベートタイマー</h1>
-        <div id="section"></div>
-        <div id="current-stage"></div>
-        <div id="timer">00:00</div>
+        <div class="header">
+            <h1>ディベートタイマー</h1>
+            <div id="section"></div>
+            <div id="current-stage"></div>
+        </div>
+        <div class="timer-container">
+            <div id="timer">00:00</div>
+        </div>
         <div id="explanation"></div>
         <div class="controls">
-            <button id="prev-stage">前のステージ</button>
+            <button id="prev-stage">前へ</button>
             <button id="start">開始</button>
-            <button id="pause">一時停止</button>
+            <button id="pause">停止</button>
             <button id="reset">リセット</button>
-            <button id="next-stage">次のステージ</button>
-            <button id="play-sound">音を鳴らす</button>
+            <button id="next-stage">次へ</button>
+            <button id="play-sound">鳴らす</button>
         </div>
     </div>
 
@@ -124,73 +128,73 @@
                 section: "立論",
                 name: "肯定側立論", 
                 time: 120,
-                explanation: "肯定側が、論題についてのメリットを根拠となる情報とともに示します。\n＊今後の議論は立論で出たもののみとする。（立論で出ていない議論を新たに出してはいけない）"
+                explanation: "肯定側が論題のメリットを示す"
             },
             { 
                 section: "立論",
                 name: "否定側立論", 
                 time: 120,
-                explanation: "否定側が、論題についてのデメリットを根拠となる情報とともに示します。\n＊今後の議論は立論で出たもののみとする。（立論で出ていない議論を新たに出してはいけない）"
+                explanation: "否定側が論題のデメリットを示す"
             },
             { 
                 section: "質疑",
-                name: "作戦タイム（質疑準備）", 
+                name: "作戦タイム", 
                 time: 60,
-                explanation: "相手チームにどのような質問をぶつけるかをまとめます。"
+                explanation: "質問内容を準備する"
             },
             { 
                 section: "質疑",
                 name: "否定側質疑", 
                 time: 120,
-                explanation: "相手の立論について、不明な点や疑問点を質問します。\n＊質問のみ。反論はしない"
+                explanation: "否定側が肯定側に質問する"
             },
             { 
-                section: "質疑",
+                section: "質疥",
                 name: "肯定側質疑", 
                 time: 120,
-                explanation: "相手の立論について、不明な点や疑問点を質問します。\n＊質問のみ。反論はしない"
+                explanation: "肯定側が否定側に質問する"
             },
             { 
                 section: "反駁",
-                name: "作戦タイム（第一反駁準備）", 
+                name: "作戦タイム", 
                 time: 120,
-                explanation: "第一反駁で相手の立論のどの部分へ反論するかを決めます。"
+                explanation: "第一反駁の準備をする"
             },
             { 
                 section: "反駁",
                 name: "否定側第一反駁", 
                 time: 120,
-                explanation: "質疑の内容を生かしつつ、相手のメリットに反論します。"
+                explanation: "否定側が肯定側の主張に反論する"
             },
             { 
                 section: "反駁",
                 name: "肯定側第一反駁", 
                 time: 120,
-                explanation: "質疥の内容を生かしつつ、相手のデメリットに反論します。"
+                explanation: "肯定側が否定側の主張に反論する"
             },
             { 
                 section: "反駁",
-                name: "作戦タイム（第二反駁準備）", 
+                name: "作戦タイム", 
                 time: 120,
-                explanation: "第二反駁で、どのようなアピールをするかを話し合います。\n＊第一反駁で言っていないことは、第二反駁で言ってはいけません。"
+                explanation: "第二反駁の準備をする"
             },
             { 
                 section: "反駁",
                 name: "否定側第二反駁", 
                 time: 120,
-                explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、審判へ自分たちの勝ちをアピールします。"
+                explanation: "否定側が最終的な主張をする"
             },
             { 
                 section: "反駁",
                 name: "肯定側第二反駁", 
                 time: 120,
-                explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、審判へ自分たちの勝ちをアピールします。"
+                explanation: "肯定側が最終的な主張をする"
             },
             { 
                 section: "判定",
                 name: "判定", 
                 time: 60,
-                explanation: "審判の投票（挙手）によって、勝利チームを判定します。挙手の数を数える　同点なら否定側の勝利"
+                explanation: "審判が勝敗を判定する"
             }
         ];
 
