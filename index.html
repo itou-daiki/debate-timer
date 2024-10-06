@@ -251,6 +251,7 @@
                     } else {
                         clearInterval(timerInterval);
                         playLoopedSound(timerEndSound);
+                        nextStage(); // タイマーが0になったら次のステージに進む
                         isRunning = false;
                         startButton.disabled = false;
                         pauseButton.disabled = true;
