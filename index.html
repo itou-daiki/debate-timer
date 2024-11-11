@@ -42,6 +42,14 @@
         }
         .header {
             text-align: center;
+            position: relative;
+        }
+        #current-time {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 1.2vh;
+            color: var(--accent-color);
         }
         h1 {
             font-size: 4vh;
@@ -60,6 +68,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
         #timer {
             font-size: 18vh;
@@ -115,6 +124,7 @@
     <div class="container">
         <div class="header">
             <h1>ディベートタイマー</h1>
+            <div id="current-time"></div>
             <div id="section"></div>
             <div id="current-stage"></div>
         </div>
@@ -228,6 +238,7 @@
         const playSoundButton = document.getElementById('play-sound');
         const timerEndSound = document.getElementById('timer-end-sound');
         const attentionSound = document.getElementById('attention-sound');
+        const currentTimeDisplay = document.getElementById('current-time');
 
         /**
          * 指定された音声を指定回数再生する関数
@@ -296,6 +307,8 @@
                             })
                             .catch(err => {
                                 console.error('音声再生中にエラーが発生しました:', err);
+                                // 音声再生エラー時でも次のステージに進む
+                                nextStage();
                             });
                     }
                 }, 1000);
@@ -349,6 +362,15 @@
                 });
         }
 
+        // 現在時刻を取得して表示する関数
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            currentTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
         // ボタンのイベントリスナー設定
         startButton.addEventListener('click', startTimer);
         pauseButton.addEventListener('click', pauseTimer);
@@ -356,6 +378,10 @@
         nextStageButton.addEventListener('click', nextStage);
         prevStageButton.addEventListener('click', prevStage);
         playSoundButton.addEventListener('click', playSound);
+
+        // 現在時刻の初期表示と定期更新
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
 
         // 初期表示の更新
         updateStageDisplay();
