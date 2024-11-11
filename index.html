@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ディベートタイマー Ver1.2</title>
+    <title>ディベートタイマー</title>
     <style>
         :root {
             --background-color: #f0f4f8;
@@ -48,19 +48,22 @@
             margin: 0;
             color: var(--accent-color);
         }
+        #stage-info {
+            margin-top: 1vh;
+        }
         #section {
-            font-size: 5vh;
+            font-size: 3vh;
             color: var(--accent-color);
             font-weight: bold;
         }
         #current-stage {
-            font-size: 3.5vh;
+            font-size: 2.5vh;
+            margin-top: 0.5vh;
         }
         .timer-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
         }
         #timer {
             font-size: 18vh;
@@ -121,15 +124,15 @@
     <div class="container">
         <div class="header">
             <h1>ディベートタイマー</h1>
+            <div id="stage-info">
+                <div id="section"></div>
+                <div id="current-stage"></div>
+            </div>
         </div>
         <div class="timer-container">
             <div id="timer">00:00</div>
         </div>
         <div id="current-time"></div>
-        <div id="stage-info">
-            <div id="section"></div>
-            <div id="current-stage"></div>
-        </div>
         <div id="explanation"></div>
         <div class="controls">
             <button id="prev-stage">前へ</button>
