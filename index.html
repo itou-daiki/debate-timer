@@ -152,55 +152,55 @@
             { 
                 section: "「質疑」",
                 name: "作戦タイム", 
-                time: 60,
+                time: 150, // 2分30秒 = 150秒
                 explanation: "相手チームにどのような質問をぶつけるかをまとめます"
             },
             { 
                 section: "「質疑」",
                 name: "否定側質疑", 
-                time: 90,
+                time: 120,
                 explanation: "相手の立論について、不明な点や疑問点を質問します"
             },
             { 
                 section: "「質疑」",
                 name: "肯定側質疑", 
-                time: 90,
+                time: 120,
                 explanation: "相手の立論について、不明な点や疑問点を質問します"
             },
             { 
                 section: "「第一反駁」",
                 name: "作戦タイム", 
-                time: 60,
+                time: 150,
                 explanation: "第一反駁で相手の立論のどの部分へ反論するかを決めます"
             },
             { 
                 section: "「第一反駁」",
                 name: "否定側第一反駁", 
-                time: 90,
+                time: 120,
                 explanation: "質疥の内容を生かしつつ、相手のメリットに反論します"
             },
             { 
                 section: "「第一反駁」",
                 name: "肯定側第一反駁", 
-                time: 90,
+                time: 120,
                 explanation: "質疥の内容を生かしつつ、相手のデメリットに反論します"
             },
             { 
                 section: "「第二反駁」",
                 name: "作戦タイム", 
-                time: 60,
+                time: 150,
                 explanation: "第二反駁で、どのようなアピールをするかを話し合います"
             },
             { 
                 section: "「第二反駁」",
                 name: "否定側第二反駁", 
-                time: 90,
+                time:120,
                 explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、 審判へ自分たちの勝ちをアピールします　＊第一反駁で言っていないことは、第二反駁で言ってはいけません。"
             },
             { 
                 section: "「第二反駁」",
                 name: "肯定側第二反駁", 
-                time: 90,
+                time: 120,
                 explanation: "第一反駁への反論をし、改めてメリット・デメリットを比較した上で、 審判へ自分たちの勝ちをアピールします　＊第一反駁で言っていないことは、第二反駁で言ってはいけません。"
             },
             { 
@@ -215,6 +215,7 @@
         let timeLeft = stages[currentStageIndex].time;
         let timerInterval;
         let isRunning = false;
+        let timerEnded = false; // タイマーが終了したかどうかを示すフラグ
 
         const sectionDisplay = document.getElementById('section');
         const timerDisplay = document.getElementById('timer');
@@ -242,7 +243,7 @@
         }
 
         function startTimer() {
-            if (!isRunning) {
+            if (!isRunning && !timerEnded) {
                 isRunning = true;
                 timerInterval = setInterval(() => {
                     if (timeLeft > 0) {
@@ -250,10 +251,11 @@
                         updateTimerDisplay();
                     } else {
                         clearInterval(timerInterval);
-                        playLoopedSound(timerEndSound);
-                        nextStage(); // タイマーが0になったら次のステージに進む
                         isRunning = false;
-                        startButton.disabled = false;
+                        timerEnded = true;
+                        playLoopedSound(timerEndSound);
+                        // 「次へ」ボタンは常に有効化されているため、特別な処理は不要
+                        startButton.disabled = true;
                         pauseButton.disabled = true;
                     }
                 }, 1000);
@@ -274,6 +276,7 @@
         function resetTimer() {
             clearInterval(timerInterval);
             isRunning = false;
+            timerEnded = false;
             timeLeft = stages[currentStageIndex].time;
             updateTimerDisplay();
             startButton.disabled = false;
@@ -281,6 +284,9 @@
         }
 
         function nextStage() {
+            clearInterval(timerInterval); // 現在のタイマーを停止
+            isRunning = false;
+            timerEnded = false;
             currentStageIndex = (currentStageIndex + 1) % stages.length;
             timeLeft = stages[currentStageIndex].time;
             updateStageDisplay();
@@ -289,6 +295,9 @@
         }
 
         function prevStage() {
+            clearInterval(timerInterval); // 現在のタイマーを停止
+            isRunning = false;
+            timerEnded = false;
             currentStageIndex = (currentStageIndex - 1 + stages.length) % stages.length;
             timeLeft = stages[currentStageIndex].time;
             updateStageDisplay();
@@ -298,14 +307,16 @@
 
         function playLoopedSound(sound) {
             let playCount = 0;
-            sound.play();
-            sound.addEventListener('ended', function() {
-                playCount++;
+            const playSoundTwice = () => {
                 if (playCount < 2) {
-                    this.currentTime = 0;
-                    this.play();
+                    sound.currentTime = 0;
+                    sound.play();
+                    playCount++;
                 }
-            }, { once: false });
+            };
+            sound.removeEventListener('ended', playSoundTwice); // 既存のリスナーを削除
+            sound.addEventListener('ended', playSoundTwice, { once: false });
+            playSoundTwice();
         }
 
         function playSound() {
