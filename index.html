@@ -215,7 +215,6 @@
         let timeLeft = stages[currentStageIndex].time;
         let timerInterval;
         let isRunning = false;
-        let timerEnded = false; // タイマーが終了したかどうかを示すフラグ
 
         const sectionDisplay = document.getElementById('section');
         const timerDisplay = document.getElementById('timer');
@@ -230,6 +229,44 @@
         const timerEndSound = document.getElementById('timer-end-sound');
         const attentionSound = document.getElementById('attention-sound');
 
+        /**
+         * 指定された音声を指定回数再生する関数
+         * @param {HTMLAudioElement} sound - 再生する音声要素
+         * @param {number} loops - 再生回数
+         * @returns {Promise} - 再生が完了したら解決されるPromise
+         */
+        function playLoopedSound(sound, loops = 2) {
+            return new Promise((resolve, reject) => {
+                let playCount = 0;
+
+                const onEnded = () => {
+                    playCount++;
+                    if (playCount < loops) {
+                        sound.currentTime = 0;
+                        sound.play().then(() => {
+                            // 再生成功
+                        }).catch(err => {
+                            console.error('音声再生エラー:', err);
+                            reject(err);
+                        });
+                    } else {
+                        sound.removeEventListener('ended', onEnded);
+                        resolve();
+                    }
+                };
+
+                sound.addEventListener('ended', onEnded);
+
+                sound.currentTime = 0;
+                sound.play().then(() => {
+                    // 再生成功
+                }).catch(err => {
+                    console.error('音声再生エラー:', err);
+                    reject(err);
+                });
+            });
+        }
+
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
@@ -243,7 +280,7 @@
         }
 
         function startTimer() {
-            if (!isRunning && !timerEnded) {
+            if (!isRunning) {
                 isRunning = true;
                 timerInterval = setInterval(() => {
                     if (timeLeft > 0) {
@@ -252,11 +289,14 @@
                     } else {
                         clearInterval(timerInterval);
                         isRunning = false;
-                        timerEnded = true;
-                        playLoopedSound(timerEndSound, 2);
-                        // 「次へ」ボタンは常に有効化されているため、特別な処理は不要
-                        startButton.disabled = true;
-                        pauseButton.disabled = true;
+                        playLoopedSound(timerEndSound, 2)
+                            .then(() => {
+                                // 音声再生完了後に次のステージへ遷移
+                                nextStage();
+                            })
+                            .catch(err => {
+                                console.error('音声再生中にエラーが発生しました:', err);
+                            });
                     }
                 }, 1000);
                 startButton.disabled = true;
@@ -276,7 +316,6 @@
         function resetTimer() {
             clearInterval(timerInterval);
             isRunning = false;
-            timerEnded = false;
             timeLeft = stages[currentStageIndex].time;
             updateTimerDisplay();
             startButton.disabled = false;
@@ -284,9 +323,8 @@
         }
 
         function nextStage() {
-            clearInterval(timerInterval); // 現在のタイマーを停止
+            clearInterval(timerInterval);
             isRunning = false;
-            timerEnded = false;
             currentStageIndex = (currentStageIndex + 1) % stages.length;
             timeLeft = stages[currentStageIndex].time;
             updateStageDisplay();
@@ -295,9 +333,8 @@
         }
 
         function prevStage() {
-            clearInterval(timerInterval); // 現在のタイマーを停止
+            clearInterval(timerInterval);
             isRunning = false;
-            timerEnded = false;
             currentStageIndex = (currentStageIndex - 1 + stages.length) % stages.length;
             timeLeft = stages[currentStageIndex].time;
             updateStageDisplay();
@@ -305,33 +342,11 @@
             resetTimer();
         }
 
-        /**
-         * 指定された音声を指定回数再生する関数
-         * @param {HTMLAudioElement} sound - 再生する音声要素
-         * @param {number} loops - 再生回数
-         */
-        function playLoopedSound(sound, loops = 2) {
-            let playCount = 0;
-
-            const onEnded = () => {
-                playCount++;
-                if (playCount < loops) {
-                    sound.currentTime = 0;
-                    sound.play();
-                } else {
-                    sound.removeEventListener('ended', onEnded);
-                }
-            };
-
-            sound.addEventListener('ended', onEnded);
-            sound.currentTime = 0;
-            sound.play().catch(error => {
-                console.error('音声再生エラー:', error);
-            });
-        }
-
         function playSound() {
-            playLoopedSound(attentionSound, 2);
+            playLoopedSound(attentionSound, 2)
+                .catch(err => {
+                    console.error('音声再生中にエラーが発生しました:', err);
+                });
         }
 
         // ボタンのイベントリスナー設定
