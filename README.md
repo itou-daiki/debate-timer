@@ -106,8 +106,7 @@
 
 **あなたの名前**
 
-- [GitHub](https://github.com/yourusername)
-- [メール](mailto:your.email@example.com)
+- [GitHub](https://github.com/itou-daiki)
 
 ## 貢献
 
