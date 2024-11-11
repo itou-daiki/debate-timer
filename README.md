@@ -104,7 +104,7 @@
 
 ## 作者
 
-**あなたの名前**
+**Dit-Lab.(Daiki Ito)**
 
 - [GitHub](https://github.com/itou-daiki)
 
